@@ -23,15 +23,7 @@ public class CategoryService {
      */
     @Transactional
     public CategoryResponse createCategory(CategoryRequest request) {
-        Long ancestorId = null;
-        // 부모 카테고리 검증
-        if (request.getParentId() != null) {
-            Category parent = categoryRepository.findById(request.getParentId())
-                    .orElseThrow(() -> new CategoryNotFoundException(request.getParentId()));
-
-            ancestorId = parent.getAncestorId() != null ? parent.getAncestorId() : parent.getId();
-        }
-        
+        Long ancestorId = getAncestorId(request.getParentId());
         Category category = Category.builder()
                 .name(request.getName())
                 .slug(request.getSlug())
@@ -53,9 +45,20 @@ public class CategoryService {
     public CategoryResponse updateCategory(Long id, CategoryRequest request) {
         Category category = categoryRepository.findById(id)
                 .orElseThrow(CategoryNotFoundException::new);
-        
+        Long ancestorId = getAncestorId(request.getParentId());
         category.update(request.getName(), request.getSlug(), request.getParentId(), request.getOrder());
         return CategoryResponse.from(category);
+    }
+
+    private Long getAncestorId(Long parentId) {
+        if (parentId == null) {
+            return null;
+        }
+
+        Category parent = categoryRepository.findById(parentId)
+                .orElseThrow(() -> new CategoryNotFoundException(parentId));
+
+        return parent.getAncestorId() != null ? parent.getAncestorId() : parent.getId();
     }
 
     /**
