@@ -7,4 +7,8 @@ public class CategoryNotFoundException extends NotFoundException {
     public CategoryNotFoundException() {
         super(CODE, MESSAGE);
     }
+
+    public CategoryNotFoundException(Long id){
+        super(CODE, String.format("%s (id: %d)", MESSAGE, id));
+    }
 }
