@@ -2,7 +2,6 @@ package com.musinsa.category.exception;
 
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Getter
 public class ApiException extends RuntimeException{

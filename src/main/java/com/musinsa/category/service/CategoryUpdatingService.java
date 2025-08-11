@@ -4,6 +4,7 @@ import com.musinsa.category.domain.entity.Category;
 import com.musinsa.category.domain.repository.CategoryRepository;
 import com.musinsa.category.dto.request.CategoryRequest;
 import com.musinsa.category.dto.response.CategoryResponse;
+import com.musinsa.category.exception.CategoryCannotDeleteException;
 import com.musinsa.category.exception.CategoryNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -71,6 +72,10 @@ public class CategoryUpdatingService {
         if (!categoryRepository.existsById(id)) {
             throw new CategoryNotFoundException();
         }
+        if (categoryRepository.existsByParentId(id)){
+            throw new CategoryCannotDeleteException("하위 카테고리가 존재하여 삭제가 불가능합니다.");
+        }
+
 
         categoryRepository.deleteById(id);
         return true;
