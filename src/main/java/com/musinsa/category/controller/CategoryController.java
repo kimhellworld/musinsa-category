@@ -3,6 +3,7 @@ package com.musinsa.category.controller;
 import com.musinsa.category.dto.request.CategoryRequest;
 import com.musinsa.category.dto.response.CategoryResponse;
 import com.musinsa.category.dto.response.CategoryTreeResponse;
+import com.musinsa.category.dto.response.PagingResponse;
 import com.musinsa.category.service.CategoryFetchingService;
 import com.musinsa.category.service.CategoryUpdatingService;
 import jakarta.validation.Valid;
@@ -37,21 +38,16 @@ public class CategoryController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Boolean> deleteCategory(@PathVariable Long id) {
-        Boolean deleted = categoryUpdatingService.deleteCategory(id);
-        return ResponseEntity.ok(deleted);
+        return ResponseEntity.ok(categoryUpdatingService.deleteCategory(id));
     }
 
     @GetMapping
-    public ResponseEntity<Map<String, List<CategoryTreeResponse>>> getAllCategories() {
-        List<CategoryTreeResponse> categories = categoryFetchingService.getAllCategories();
-        Map<String, List<CategoryTreeResponse>> response = new HashMap<>();
-        response.put("data", categories);
-        return ResponseEntity.ok(response);
+    public ResponseEntity<PagingResponse<CategoryTreeResponse>> getAllCategories() {
+        return ResponseEntity.ok(categoryFetchingService.getAllCategories());
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<CategoryTreeResponse> getCategoryWithChildren(@PathVariable Long id) {
-        CategoryTreeResponse category = categoryFetchingService.getCategoryWithChildren(id);
-        return ResponseEntity.ok(category);
+        return ResponseEntity.ok(categoryFetchingService.getCategoryWithChildren(id));
     }
 }

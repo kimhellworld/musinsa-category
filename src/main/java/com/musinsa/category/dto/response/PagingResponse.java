@@ -6,6 +6,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.Collections;
+import java.util.List;
+
 @Getter
 @Builder
 @AllArgsConstructor
@@ -13,8 +16,20 @@ import lombok.NoArgsConstructor;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class PagingResponse<T> {
 
-    private T data;
+    private List<T> data;
     private Paging paging;
+
+    public static <T> PagingResponse<T> empty(){
+        return new PagingResponse<>(Collections.emptyList(), null);
+    }
+
+    public static <T> PagingResponse<T> of(List<T> data, Paging paging) {
+        return new PagingResponse<>(data, paging);
+    }
+
+    public static <T> PagingResponse<T> of(List<T> data) {
+        return  new PagingResponse<>(data, null);
+    }
 
     @Getter
     @Builder

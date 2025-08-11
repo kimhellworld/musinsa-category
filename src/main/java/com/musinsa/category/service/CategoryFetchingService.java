@@ -5,6 +5,7 @@ import com.musinsa.category.domain.repository.CategoryRepository;
 import com.musinsa.category.dto.request.CategoryRequest;
 import com.musinsa.category.dto.response.CategoryResponse;
 import com.musinsa.category.dto.response.CategoryTreeResponse;
+import com.musinsa.category.dto.response.PagingResponse;
 import com.musinsa.category.exception.CategoryNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,9 +25,9 @@ public class CategoryFetchingService {
      * 전체 카테고리 목록을 트리 형태로 반환
      * @return
      */
-    public List<CategoryTreeResponse> getAllCategories() {
+    public PagingResponse<CategoryTreeResponse> getAllCategories() {
         List<Category> allCategories = categoryRepository.findAllByIsActiveTrueOrderBySortOrderAsc();
-        return buildResponseAsTree(allCategories);
+        return PagingResponse.of(buildResponseAsTree(allCategories));
     }
 
     /**
