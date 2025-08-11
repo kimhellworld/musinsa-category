@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class CategoryService {
+public class CategoryUpdatingService {
 
     private final CategoryRepository categoryRepository;
 
@@ -46,7 +46,7 @@ public class CategoryService {
         Category category = categoryRepository.findById(id)
                 .orElseThrow(CategoryNotFoundException::new);
         Long ancestorId = getAncestorId(request.getParentId());
-        category.update(request.getName(), request.getSlug(), request.getParentId(), request.getOrder());
+        category.update(request.getName(), request.getSlug(), request.getParentId(), ancestorId, request.getOrder());
         return CategoryResponse.from(category);
     }
 
@@ -75,4 +75,5 @@ public class CategoryService {
         categoryRepository.deleteById(id);
         return true;
     }
+
 }

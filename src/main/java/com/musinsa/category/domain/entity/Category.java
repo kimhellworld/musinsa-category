@@ -63,14 +63,19 @@ public class Category {
         this.isActive = isActive == null ? true : isActive;
     }
 
-    public void update(String name, String slug, Long parentId, Integer sortOrder) {
+    public void update(String name, String slug, Long parentId, Long ancestorId, Integer sortOrder) {
         this.name = name;
         this.slug = slug;
         this.parentId = parentId;
+        this.ancestorId = ancestorId;
         this.sortOrder = sortOrder;
     }
 
     public void inactive(){
         this.isActive = false;
+    }
+
+    public boolean hasParent() {
+        return this.parentId != null;
     }
 }
