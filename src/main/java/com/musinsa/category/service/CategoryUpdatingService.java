@@ -76,7 +76,6 @@ public class CategoryUpdatingService {
             throw new CategoryCannotDeleteException("하위 카테고리가 존재하여 삭제가 불가능합니다.");
         }
 
-
         categoryRepository.deleteById(id);
         return true;
     }
