@@ -17,13 +17,56 @@
 
 ## 애플리케이션 실행 방법
 
-### 필수 요구사항
-- Java 17 이상
+### 1. Java 21 설치
 
-### 빌드 및 실행
+#### Windows
+1. [Oracle JDK 21](https://www.oracle.com/java/technologies/downloads/#java21) 또는 [OpenJDK 21](https://adoptium.net/temurin/releases/?version=21) 다운로드
+2. 다운로드한 설치 파일 실행 후 설치
+3. 환경 변수 설정:
+   - `Win + R` → `sysdm.cpl` 실행
+   - `고급` 탭 → `환경 변수` 클릭
+   - `시스템 변수`에서 `JAVA_HOME` 추가: `C:\Program Files\Java\jdk-21`
+   - `Path` 변수에 `%JAVA_HOME%\bin` 추가
+4. 설치 확인:
+   ```cmd
+   java -version
+   ```
+
+#### macOS
+1. Homebrew 사용:
+   ```bash
+   brew install openjdk@21
+   ```
+2. JAVA_HOME 설정:
+   ```bash
+   echo 'export JAVA_HOME="/opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk/Contents/home"' >> ~/.zshrc
+   echo 'export PATH="${PATH}:$JAVA_HOME/bin"' >> ~/.zshrc
+   source ~/.zshrc
+   ```
+3. 설치 확인:
+   ```bash
+   java -version
+   ```
+
+### 2. 프로젝트 빌드 및 실행
+
+#### Windows
+```cmd
+# 프로젝트 클론
+git clone https://github.com/kimhellworld/musinsa-category.git
+cd musinsa-category
+
+# 빌드
+gradlew.bat clean build
+
+# 실행
+gradlew.bat bootRun
+```
+
+#### macOS/Linux
 ```bash
 # 프로젝트 클론
-git clone <repository-url>
+git clone https://github.com/kimhellworld/musinsa-category.git
 cd musinsa-category
 
 # 빌드
@@ -32,9 +75,16 @@ cd musinsa-category
 # 실행
 ./gradlew bootRun
 ```
+
 애플리케이션은 기본적으로 8080 포트에서 실행됩니다.
 
-8080 포트가 사용중일 경우 아래 bootRun 명령의 {port}를 원하는 포트로 설정 후 실행합니다.
+#### 포트 변경 시
+**Windows:**
+```cmd
+gradlew.bat bootRun --args="--server.port={port}"
+```
+
+**macOS/Linux:**
 ```bash
 ./gradlew bootRun --args='--server.port={port}'
 ```
@@ -43,28 +93,32 @@ cd musinsa-category
 
 ### 카테고리 테이블 (Category)
 ```sql
-CREATE TABLE category (
-    id          BIGINT NOT NULL AUTO_INCREMENT,
-    parent_id   BIGINT NULL,
-    name        VARCHAR(255) NOT NULL,
-    slug        VARCHAR(255) NOT NULL,
-    order_num   INTEGER NOT NULL DEFAULT 0,
-    created_at  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    PRIMARY KEY (id),
-    FOREIGN KEY (parent_id) REFERENCES category(id),
-    UNIQUE KEY uk_category_slug (slug)
+CREATE TABLE categories (
+   id           BIGINT AUTO_INCREMENT PRIMARY KEY,        -- 카테고리 ID
+   ancestor_id  BIGINT,                                   -- 최상위 카테고리 ID
+   parent_id    BIGINT,                                   -- 상위 카테고리 ID
+   name         VARCHAR(100) NOT NULL,                    -- 화면 노출 이름
+   slug         VARCHAR(150) NOT NULL,                    -- 카테고리 slug
+   sort_order   INT NOT NULL DEFAULT 0,                   -- 정렬순서
+   is_active    BOOLEAN NOT NULL DEFAULT TRUE,            -- 활성여부 (TINYINT(1) -> BOOLEAN)
+   created_at   TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,  -- 생성일시
+   updated_at   TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,  -- 수정일시 (*자동 갱신 주의)
+   deleted_at   TIMESTAMP                                  -- 삭제일시 (soft delete)
 );
+
 ```
 
 ### 테이블 설명
-- **id**: 카테고리 고유 식별자 (Primary Key)
+- **id**: 카테고리 고유 식별자
 - **parent_id**: 상위 카테고리 ID (NULL인 경우 최상위 카테고리)
+- **ancestor_id**: 최상위 카테고리 ID (NULL인 경우 최상위 카테고리)
 - **name**: 카테고리 명
 - **slug**: URL에 사용되는 카테고리 식별자 (고유값)
-- **order_num**: 카테고리 정렬 순서
+- **sort_order**: 카테고리 정렬 순서
+- **is_active**: 활성여부(1 이면 활성)
 - **created_at**: 생성 일시
 - **updated_at**: 수정 일시
+- **deleted_at**: 삭제 일시
 
 ## API 명세
 
